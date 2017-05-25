@@ -1,0 +1,181 @@
+
+CREATE TABLE Administrator
+( 
+	idAdm              char(18)  NOT NULL ,
+	imePrezime         char(18)  NULL ,
+	email              char(18)  NULL ,
+	password           char(18)  NULL 
+)
+
+
+ALTER TABLE Administrator
+	ADD CONSTRAINT XPKAdministrator PRIMARY KEY  CLUSTERED (idAdm ASC)
+
+
+CREATE TABLE Igrac
+( 
+	idIgr              char(18)  NOT NULL ,
+	ime                char(18)  NULL ,
+	prezime            char(18)  NULL ,
+	datumRodjenja      char(18)  NULL ,
+	pozicija           char(18)  NULL ,
+	nacionalnost       char(18)  NULL ,
+	cena               char(18)  NULL ,
+	idTim              char(18)  NULL 
+)
+
+
+ALTER TABLE Igrac
+	ADD CONSTRAINT XPKIgrac PRIMARY KEY  CLUSTERED (idIgr ASC)
+
+
+CREATE TABLE Kolo
+( 
+	idKol              char(18)  NOT NULL ,
+	datum              char(18)  NULL 
+)
+
+
+ALTER TABLE Kolo
+	ADD CONSTRAINT XPKKolo PRIMARY KEY  CLUSTERED (idKol ASC)
+
+
+CREATE TABLE Korisnik
+( 
+	idKor              char(18)  NOT NULL ,
+	korisnickoIme      char(18)  NULL ,
+	imePrezime         char(18)  NULL ,
+	nacionalnost       char(18)  NULL ,
+	email              char(18)  NULL ,
+	password           char(18)  NULL ,
+	aktivan            char(18)  NULL 
+)
+
+
+ALTER TABLE Korisnik
+	ADD CONSTRAINT XPKKorisnik PRIMARY KEY  CLUSTERED (idKor ASC)
+
+
+CREATE TABLE PrelazniRok
+( 
+	idPrk              char(18)  NOT NULL ,
+	aktivan            char(18)  NULL ,
+	od                 char(18)  NULL ,
+	do                 char(18)  NULL 
+)
+
+
+ALTER TABLE PrelazniRok
+	ADD CONSTRAINT XPKPrelazniRok PRIMARY KEY  CLUSTERED (idPrk ASC)
+
+
+CREATE TABLE TimKorisnik
+( 
+	idKor              char(18)  NOT NULL ,
+	naziv              char(18)  NULL 
+)
+
+
+ALTER TABLE TimKorisnik
+	ADD CONSTRAINT XPKTimKorisnik PRIMARY KEY  CLUSTERED (idKor ASC)
+
+
+CREATE TABLE TimKorisnik_Igrac
+( 
+	idKor              char(18)  NOT NULL ,
+	idIgr              char(18)  NOT NULL 
+)
+
+
+ALTER TABLE TimKorisnik_Igrac
+	ADD CONSTRAINT XPKTimKorisnik_Igrac PRIMARY KEY  CLUSTERED (idKor ASC,idIgr ASC)
+
+
+CREATE TABLE TimPravi
+( 
+	idTim              char(18)  NOT NULL ,
+	naziv              char(18)  NULL 
+)
+
+
+ALTER TABLE TimPravi
+	ADD CONSTRAINT XPKTimPravi PRIMARY KEY  CLUSTERED (idTim ASC)
+
+
+CREATE TABLE UcinakIgraca
+( 
+	idKol              char(18)  NOT NULL ,
+	idIgr              char(18)  NOT NULL ,
+	igrao              char(18)  NULL ,
+	poeni              char(18)  NULL 
+)
+
+
+ALTER TABLE UcinakIgraca
+	ADD CONSTRAINT XPKUcinakIgraca PRIMARY KEY  CLUSTERED (idKol ASC,idIgr ASC)
+
+
+CREATE TABLE UcinakKorisnik
+( 
+	idKor              char(18)  NOT NULL ,
+	idKol              char(18)  NOT NULL ,
+	ostvarenoPoena     char(18)  NULL 
+)
+
+
+ALTER TABLE UcinakKorisnik
+	ADD CONSTRAINT XPKUcinakKorisnik PRIMARY KEY  CLUSTERED (idKor ASC,idKol ASC)
+
+
+
+ALTER TABLE Igrac
+	ADD CONSTRAINT R_3 FOREIGN KEY (idTim) REFERENCES TimPravi(idTim)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+
+
+
+ALTER TABLE TimKorisnik
+	ADD CONSTRAINT R_1 FOREIGN KEY (idKor) REFERENCES Korisnik(idKor)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+
+
+
+ALTER TABLE TimKorisnik_Igrac
+	ADD CONSTRAINT R_4 FOREIGN KEY (idKor) REFERENCES TimKorisnik(idKor)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
+
+
+ALTER TABLE TimKorisnik_Igrac
+	ADD CONSTRAINT R_5 FOREIGN KEY (idIgr) REFERENCES Igrac(idIgr)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
+
+
+
+ALTER TABLE UcinakIgraca
+	ADD CONSTRAINT R_6 FOREIGN KEY (idKol) REFERENCES Kolo(idKol)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
+
+
+ALTER TABLE UcinakIgraca
+	ADD CONSTRAINT R_7 FOREIGN KEY (idIgr) REFERENCES Igrac(idIgr)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
+
+
+
+ALTER TABLE UcinakKorisnik
+	ADD CONSTRAINT R_8 FOREIGN KEY (idKor) REFERENCES TimKorisnik(idKor)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
+
+
+ALTER TABLE UcinakKorisnik
+	ADD CONSTRAINT R_9 FOREIGN KEY (idKol) REFERENCES Kolo(idKol)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
+
