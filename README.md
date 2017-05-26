@@ -56,3 +56,5 @@ BEGIN
    CLOSE @CursorIgrac
    DEALLOCATE @CursorIgrac
 END
+
+Napisati triger za kreiranje tima po kreiranju korisnika
