@@ -1,221 +1,82 @@
--- phpMyAdmin SQL Dump
--- version 4.6.4
--- https://www.phpmyadmin.net/
---
--- Host: 127.0.0.1
--- Generation Time: May 25, 2017 at 02:23 PM
--- Server version: 5.7.14
--- PHP Version: 5.6.25
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
+CREATE TABLE ekipa
+(
+	IdEkipa              INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	Naziv                VARCHAR(50) NULL
+) AUTO_INCREMENT = 1;
+
+CREATE TABLE igrac
+(
+	IdIgrac              INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	Ime                  VARCHAR(20) NULL,
+	Prezime              VARCHAR(20) NULL,
+	DatumRodjenja        DATE NULL,
+	Pozicija             CHAR(2) NULL,
+	Nacionalnost         VARCHAR(50) NULL,
+	IdEkipa              INTEGER NULL
+) AUTO_INCREMENT = 1;
+
+CREATE TABLE korisnik
+(
+	IdKorisnik           INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	KorisnickoIme        VARCHAR(50) NULL,
+	Ime                  VARCHAR(50) NULL,
+	Prezime              VARCHAR(50) NULL,
+	Email                VARCHAR(50) NULL,
+	Sifra                VARCHAR(50) NULL,
+	Poeni                INTEGER NULL CHECK ( Poeni >= 0 ),
+	BrojTokena           CHAR(18) NULL CHECK ( BrojTokena >= 0 )
+) AUTO_INCREMENT = 1;
 
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+CREATE UNIQUE INDEX XAK1korisnik ON korisnik
+(
+	KorisnickoIme ASC
+);
 
---
--- Database: `fantasy`
---
+CREATE TABLE tim
+(
+	IdKorisnik           INTEGER NOT NULL,
+	Naziv                VARCHAR(50) NULL
+);
 
--- --------------------------------------------------------
+ALTER TABLE tim
+ADD PRIMARY KEY (IdKorisnik);
 
---
--- Table structure for table `administrator`
---
+CREATE TABLE timigrac
+(
+	IdIgrac              INTEGER NOT NULL,
+	IdKorisnik           INTEGER NOT NULL,
+	JeRezerva            INTEGER NULL CHECK ( JeRezerva BETWEEN 1 AND 12 )
+);
 
-CREATE TABLE `administrator` (
-  `idAdm` char(18) NOT NULL,
-  `imePrezime` char(18) DEFAULT NULL,
-  `email` char(18) DEFAULT NULL,
-  `sifra` char(18) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+ALTER TABLE timigrac
+ADD PRIMARY KEY (IdIgrac,IdKorisnik);
 
--- --------------------------------------------------------
+CREATE TABLE ucinakigrac
+(
+	IdIgrac              INTEGER NOT NULL,
+	IdKolo               INTEGER NOT NULL CHECK ( IdKolo >= 0 ),
+	Poeni                INTEGER NULL CHECK ( Poeni >= 0 ),
+	Asistencije          INTEGER NULL CHECK ( Asistencije >= 0 ),
+	Skokovi              INTEGER NULL CHECK ( Skokovi >= 0 ),
+	Faulovi              INTEGER NULL CHECK ( Faulovi BETWEEN 0 AND 5 )
+);
 
---
--- Table structure for table `igrac`
---
+ALTER TABLE ucinakigrac
+ADD PRIMARY KEY (IdIgrac,IdKolo);
 
-CREATE TABLE `igrac` (
-  `idIgr` char(18) NOT NULL,
-  `ime` char(18) DEFAULT NULL,
-  `prezime` char(18) DEFAULT NULL,
-  `datumRodjenja` char(18) DEFAULT NULL,
-  `pozicija` char(18) DEFAULT NULL,
-  `nacionalnost` char(18) DEFAULT NULL,
-  `cena` char(18) DEFAULT NULL,
-  `idTim` char(18) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+ALTER TABLE igrac
+ADD FOREIGN KEY R_1 (IdEkipa) REFERENCES ekipa (IdEkipa);
 
--- --------------------------------------------------------
+ALTER TABLE tim
+ADD FOREIGN KEY R_2 (IdKorisnik) REFERENCES korisnik (IdKorisnik);
 
---
--- Table structure for table `kolo`
---
+ALTER TABLE timigrac
+ADD FOREIGN KEY R_3 (IdIgrac) REFERENCES igrac (IdIgrac);
 
-CREATE TABLE `kolo` (
-  `idKol` char(18) NOT NULL,
-  `datum` char(18) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+ALTER TABLE timigrac
+ADD FOREIGN KEY R_4 (IdKorisnik) REFERENCES tim (IdKorisnik);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `korisnik`
---
-
-CREATE TABLE `korisnik` (
-  `idKor` char(18) NOT NULL,
-  `korisnickoIme` char(18) DEFAULT NULL,
-  `imePrezime` char(18) DEFAULT NULL,
-  `nacionalnost` char(18) DEFAULT NULL,
-  `email` char(18) DEFAULT NULL,
-  `password` char(18) DEFAULT NULL,
-  `aktivan` char(18) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `prelaznirok`
---
-
-CREATE TABLE `prelaznirok` (
-  `idPrk` char(18) NOT NULL,
-  `aktivan` char(18) DEFAULT NULL,
-  `od` char(18) DEFAULT NULL,
-  `do` char(18) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `timkorisnik`
---
-
-CREATE TABLE `timkorisnik` (
-  `idKor` char(18) NOT NULL,
-  `naziv` char(18) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `timkorisnik_igrac`
---
-
-CREATE TABLE `timkorisnik_igrac` (
-  `idKor` char(18) NOT NULL,
-  `idIgr` char(18) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `timpravi`
---
-
-CREATE TABLE `timpravi` (
-  `idTim` char(18) NOT NULL,
-  `naziv` char(18) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `ucinakigraca`
---
-
-CREATE TABLE `ucinakigraca` (
-  `idKol` char(18) NOT NULL,
-  `idIgr` char(18) NOT NULL,
-  `igrao` char(18) DEFAULT NULL,
-  `poeni` char(18) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `ucinakkorisnik`
---
-
-CREATE TABLE `ucinakkorisnik` (
-  `idKor` char(18) NOT NULL,
-  `idKol` char(18) NOT NULL,
-  `ostvarenoPoena` char(18) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `administrator`
---
-ALTER TABLE `administrator`
-  ADD PRIMARY KEY (`idAdm`);
-
---
--- Indexes for table `igrac`
---
-ALTER TABLE `igrac`
-  ADD PRIMARY KEY (`idIgr`),
-  ADD KEY `R_3` (`idTim`);
-
---
--- Indexes for table `kolo`
---
-ALTER TABLE `kolo`
-  ADD PRIMARY KEY (`idKol`);
-
---
--- Indexes for table `korisnik`
---
-ALTER TABLE `korisnik`
-  ADD PRIMARY KEY (`idKor`);
-
---
--- Indexes for table `prelaznirok`
---
-ALTER TABLE `prelaznirok`
-  ADD PRIMARY KEY (`idPrk`);
-
---
--- Indexes for table `timkorisnik`
---
-ALTER TABLE `timkorisnik`
-  ADD PRIMARY KEY (`idKor`);
-
---
--- Indexes for table `timkorisnik_igrac`
---
-ALTER TABLE `timkorisnik_igrac`
-  ADD PRIMARY KEY (`idKor`,`idIgr`),
-  ADD KEY `R_5` (`idIgr`);
-
---
--- Indexes for table `timpravi`
---
-ALTER TABLE `timpravi`
-  ADD PRIMARY KEY (`idTim`);
-
---
--- Indexes for table `ucinakigraca`
---
-ALTER TABLE `ucinakigraca`
-  ADD PRIMARY KEY (`idKol`,`idIgr`),
-  ADD KEY `R_7` (`idIgr`);
-
---
--- Indexes for table `ucinakkorisnik`
---
-ALTER TABLE `ucinakkorisnik`
-  ADD PRIMARY KEY (`idKor`,`idKol`),
-  ADD KEY `R_9` (`idKol`);
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+ALTER TABLE ucinakigrac
+ADD FOREIGN KEY R_5 (IdIgrac) REFERENCES igrac (IdIgrac);
